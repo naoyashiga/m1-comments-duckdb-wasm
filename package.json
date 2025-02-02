@@ -6,7 +6,7 @@
   "homepage": "https://naoyashiga.github.io/m1-comments-duckdb-wasm",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build --base=/",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
