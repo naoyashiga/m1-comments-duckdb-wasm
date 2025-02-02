@@ -36,7 +36,8 @@ const tableStyles = {
     maxWidth: '400px',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap' as const
+    whiteSpace: 'nowrap' as const,
+    textAlign: 'left' as const
   },
   authorCell: {
     width: '150px'

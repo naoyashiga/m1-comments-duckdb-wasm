@@ -16,19 +16,17 @@ const YouTubeCommentViewer: React.FC = () => {
     [inputText]
   );
 
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSearchText(inputText);
+  };
+
   const { value: result, loading: searchLoading } = useAsync(async () => {
     if (!db) return null;
 
     const conn = await db.connect();
     try {
-      if (!searchText.trim()) {
-        return await conn.query(`
-          SELECT * FROM comments 
-          ORDER BY time_parsed DESC
-        `);
-      }
 
-      // 検索文字列がある場合は text で検索
       const pstmt = await conn.prepare(`
         SELECT * FROM comments 
         WHERE text ILIKE ?
@@ -38,11 +36,13 @@ const YouTubeCommentViewer: React.FC = () => {
       const sanitized = searchText.replace(/%/g, "");
       const searchPattern = `%${sanitized}%`;
       
-      return await pstmt.query(searchPattern);
+      const searchResults = await pstmt.query(searchPattern);
+      console.log("Search results:", searchResults);
+      return searchResults;
     } finally {
       await conn.close();
     }
-  }, [searchText]);
+  }, [db, searchText]);
 
   if (dbLoading) return <div>Loading database...</div>;
   if (dbError) return <div>Error: {dbError.message}</div>;
@@ -64,18 +64,21 @@ const YouTubeCommentViewer: React.FC = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <input
-        type="search"
-        placeholder="コメントまたは投稿者名で検索"
-        onChange={(e) => setInputText(e.target.value)}
-        style={{
-          width: '300px',
-          padding: '8px',
-          marginBottom: '20px',
-          border: '1px solid #ccc',
-          borderRadius: '4px'
-        }}
-      />
+      <form onSubmit={handleSearch}>
+        <input
+          type="search"
+          placeholder="コメントを検索"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          style={{
+            width: '300px',
+            padding: '8px',
+            marginBottom: '20px',
+            border: '1px solid #ccc',
+            borderRadius: '4px'
+          }}
+        />
+      </form>
       
       {comments.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '20px' }}>

@@ -47,6 +47,9 @@ export function useInitializedDuckDB(tableName: string): AsyncState<AsyncDuckDB>
         CREATE TABLE ${tableName} AS 
         SELECT * FROM read_json_auto('${DATA_JSON_PATH}')
       `);
+      console.log(`Table ${tableName} created successfully`);
+    } catch (error) {
+      console.error(`Error creating table ${tableName}:`, error);
     } finally {
       await conn.close();
     }
@@ -63,5 +66,6 @@ export function useInitializedDuckDB(tableName: string): AsyncState<AsyncDuckDB>
   if (!initialized || !db) {
     return { value: undefined, loading: true, error: undefined };
   }
+  console.log(`Database initialized successfully`);
   return { value: db, loading: false, error: undefined };
 }
